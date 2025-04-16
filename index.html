@@ -67,9 +67,13 @@
             </li>
             <li class="fragment">Today: Massive Data + Computing Power</li>
             <li class="fragment">
-              Question: How can AI automate or assist discovery?
+              Question: How can computers automate or assist discovery?
             </li>
           </ul>
+          <aside class="notes">
+            Kepler had detailed astronomical observations. <br /><br />
+            With digital technology, we can gather massive amounts of data.
+          </aside>
         </section>
 
         <!-- Background -->
@@ -81,7 +85,7 @@
               \mathbf{f} \) such that \( \mathbf{f}(\mathbf{x}) = \mathbf{y} \).
             </p>
             <p class="fragment">
-              This looks like standard function approximation (ML).
+              This seems like standard function approximation.
             </p>
             <p class="fragment">
               <strong>BUT</strong> for physical laws, we need:
@@ -123,10 +127,10 @@
               </div>
             </div>
             <aside class="notes">
+              Expressions are stored in tree form. These trees are varied (using
+              genetic algorithms) to best fit the data.<br /><br />
               Some methods can incorporate physical constraints (e.g.,
-              symmetries, conservation laws). Expressions are stored in tree
-              form. These trees are varied (genetic algorithms) to best fit the
-              data.
+              symmetries, conservation laws).
             </aside>
           </section>
         </section>
@@ -136,6 +140,7 @@
           <section>
             <h2>Focus: Dynamical Systems \( \mathbf{X}(t) \)</h2>
             <ul>
+              <li class="fragment">Ubiquitous in science & engineering.</li>
               <li class="fragment">
                 Given time-series data \( \{ \mathbf{X}_t \} \).
               </li>
@@ -147,29 +152,28 @@
                 \( \mathbf{\Phi}^{dt}(\mathbf{X}_t) = \mathbf{X}_{t+dt} \).
               </li>
             </ul>
-            <p class="fragment">Why this problem?</p>
-            <ul style="text-align: left">
-              <li class="fragment">Ubiquitous in science & engineering.</li>
-              <li class="fragment">
-                High-dimensional and complex: Hard for symbolic regression
-              </li>
-            </ul>
+            <aside class="notes">
+              Includes differential equations: fluid flow like weather
+              simulation, equations of motion, chemical reactions.<br />
+              Often high-dimensional, nonlinear, maybe even chaotic: symbolic
+              regression hopeless
+            </aside>
           </section>
           <section>
             <h2>SINDy: Sparse Identification of Nonlinear Dynamics</h2>
 
-            <p style="text-align: left">
+            <p style="text-align: left" class="fragment">
               <strong>Goal:</strong> ODE $\dot{\mathbf{X}} =
               \mathbf{f}(\mathbf{X})$ from $\{\mathbf{X}(t),
               \dot{\mathbf{X}}(t)\}$.
             </p>
 
-            <p style="text-align: left">
+            <p style="text-align: left" class="fragment">
               Assume $\mathbf{f}(\mathbf{X})$ consists of a few terms from a
               library $\Theta(\mathbf{X})$ of candidate functions (e.g.,
               polynomials $[1, \mathbf{X}, \mathbf{X}^2, \dots]$).
             </p>
-            <p style="text-align: left">
+            <p style="text-align: left" class="fragment">
               Solve $\dot{\mathbf{X}} \approx \Theta(\mathbf{X}) \Xi$ with
               sparse regression to find coeffs $\Xi$.
             </p>
@@ -196,6 +200,10 @@
                 <em>essential state variables</em>?
               </li>
             </ul>
+            <aside class="notes">
+              Video data with background: irrelevant<br /><br />
+              Atmospheric data where some areas are homogeneous: redundancy
+            </aside>
           </section>
         </section>
 
@@ -241,7 +249,6 @@
               <source src="images/air-dancer.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
-            <p class="fragment">How many variables control this motion?</p>
             <p style="font-size: 18px; text-align: right; color: gray">
               [4] (air_dancer)
             </p>
@@ -322,6 +329,7 @@
             </div>
           </section>
         </section>
+
         <!-- Manifold Hypothesis -->
         <section>
           <h2>The Manifold Hypothesis</h2>
@@ -659,7 +667,8 @@
                         color: gray;
                       "
                     >
-                      <a style="color: gray"
+                      <a
+                        style="color: gray"
                         href="https://commons.wikimedia.org/wiki/File:VanDerPolPhaseSpace.png"
                         >https://commons.wikimedia.org/wiki/File:VanDerPolPhaseSpace.png</a
                       >
@@ -761,8 +770,7 @@
               Based on rigorous results or <b>Manifold Hypothesis</b>.
             </li>
             <li class="fragment">
-              Two techniques to find the manifold and learn the dynamics when
-              the naive approach fails.
+              Two techniques to find the state space and learn the dynamics
             </li>
             <li class="fragment">
               Interpretation remains difficult, but we can simulate the system
@@ -773,35 +781,64 @@
 
         <section>
           <h2>References</h2>
-          <p style="text-align: left; font-size: 0.6em">
-            [1] Chen, B. et al. (2022). Automated discovery of fundamental
-            variables hidden in experimental data.
-            <em>Nature Computational Science, 2</em>(7), 433–442.
-            <a href="https://doi.org/10.1038/s43588-022-00281-6"
-              >https://doi.org/10.1038/s43588-022-00281-6</a
-            >
-            <br /><br />
-            [2] Floryan, D., & Graham, M. D. (2022). Data-driven discovery of
-            intrinsic dynamics. <em>Nature Machine Intelligence, 4</em>(12),
-            1113–1120.
-            <a href="https://doi.org/10.1038/s42256-022-00575-4"
-              >https://doi.org/10.1038/s42256-022-00575-4</a
-            >
-            <br /><br />
-            [3] Vlachas, P. R. et al. (2022). Multiscale simulations of complex
-            systems by learning their effective dynamics.
-            <em>Nature Machine Intelligence, 4</em>(4), 359–366.
-            <a href="https://doi.org/10.1038/s42256-022-00464-w"
-              >https://doi.org/10.1038/s42256-022-00464-w</a
-            >
-            <br /><br />
-            [4] Image data from
-            <a href="https://zenodo.org/records/6653856"
-              >https://zenodo.org/records/6653856</a
-            >
-          </p>
+          <div style="text-align: left; font-size: 0.6em">
+            <style>
+              .custom-list {
+                counter-reset: ref;
+                list-style: none;
+                padding-left: 0;
+                margin-left: 0;
+              }
+              .custom-list li::before {
+                counter-increment: ref;
+                content: "[" counter(ref) "] ";
+                font-weight: bold;
+              }
+            </style>
 
-          <p style="margin-top: 50px">Questions?</p>
+            <ul style="list-style-type: none" class="custom-list">
+              <li>
+                Chen, B. et al. (2022). Automated discovery of fundamental
+                variables hidden in experimental data.
+                <em>Nature Computational Science, 2</em>(7), 433–442.
+                <a href="https://doi.org/10.1038/s43588-022-00281-6"
+                  >https://doi.org/10.1038/s43588-022-00281-6</a
+                >
+              </li>
+              <li>
+                Floryan, D., & Graham, M. D. (2022). Data-driven discovery of
+                intrinsic dynamics.
+                <em>Nature Machine Intelligence, 4</em>(12), 1113–1120.
+                <a href="https://doi.org/10.1038/s42256-022-00575-4"
+                  >https://doi.org/10.1038/s42256-022-00575-4</a
+                >
+              </li>
+              <li>
+                Vlachas, P. R. et al. (2022). Multiscale simulations of complex
+                systems by learning their effective dynamics.
+                <em>Nature Machine Intelligence, 4</em>(4), 359–366.
+                <a href="https://doi.org/10.1038/s42256-022-00464-w"
+                  >https://doi.org/10.1038/s42256-022-00464-w</a
+                >
+              </li>
+              <li>
+                Image data from
+                <a href="https://zenodo.org/records/6653856"
+                  >https://zenodo.org/records/6653856</a
+                >
+              </li>
+            </ul>
+            <hr />
+            <div style="display: flex; align-items: center; gap: 20px">
+              <div>
+                These slides are on GitHub:<br />
+                <a href="https://github.com/valentinvogt/zuccmap"
+                  >https://github.com/valentinvogt/zuccmap</a
+                >
+              </div>
+              <img src="images/slides-qr.png" alt="QR Code" width="200" />
+            </div>
+          </div>
         </section>
       </div>
     </div>
