@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>From Data to Discovery: AI & Intrinsic Dimensionality</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@4.3.1/dist/theme/white.css"
+      id="theme"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/monokai.min.css"
+    />
+
+    <style>
+      /* Add any custom styles here */
+      /* .reveal .slides section .fragment.visible {
+        /* Example custom animation */
+      /* opacity: 1; */
+      /* visibility: inherit; */
+      /* } */
+      .reveal h1,
+      .reveal h2,
+      .reveal h3 {
+        text-transform: none; /* Prevent default uppercase */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>From Data to Discovery</h2>
+          <h3>How AI Finds the Few Variables That Control Everything</h3>
+          <p>
+            <small>Presented by Valentin Vogt</small><br />
+            <small> April 16, 2025 </small>
+          </p>
+        </section>
+
+        <section>
+          <h2>How are Physical Laws Discovered?</h2>
+          <ul>
+            <li class="fragment">
+              Traditional Approach: Observation → Data → Intuition → Trial &
+              Error
+            </li>
+            <li class="fragment">
+              Example: Kepler's Second Law: \[ \frac{dA}{dt} = \frac{1}{2} r^2
+              \frac{d\theta}{dt} = \text{constant} \]
+            </li>
+            <li class="fragment">Today: Massive Data + Computing Power</li>
+            <li class="fragment">
+              Question: How can AI automate or assist discovery?
+            </li>
+          </ul>
+        </section>
+
+        <!-- Background -->
+        <section>
+          <section>
+            <h2>The Core Problem: Finding \( f \)</h2>
+            <p>
+              Given data \( \{ \mathbf{x}, \mathbf{y} \} \), find a function \(
+              \mathbf{f} \) such that \( \mathbf{f}(\mathbf{x}) = \mathbf{y} \).
+            </p>
+            <p class="fragment">
+              This looks like standard function approximation (ML).
+            </p>
+            <p class="fragment">
+              <strong>BUT</strong> for physical laws, we need:
+            </p>
+            <ul>
+              <li class="fragment">
+                An <em>explicit</em> form for \( \mathbf{f} \) that's simple and
+                interpretable.
+              </li>
+            </ul>
+            <aside class="notes">
+              Regression: depends on our assumption on the function form.<br />
+              NNs: Black boxes.
+            </aside>
+          </section>
+
+          <section>
+            <h2>Symbolic Regression</h2>
+            <div style="display: flex; align-items: flex-start; gap: 50px">
+              <ul>
+                <li class="fragment">
+                  Goal: Discover a mathematical expression from given data.
+                </li>
+                <li class="fragment">
+                  Searches a space of possible equations <br />$\Rightarrow$
+                  huge search space
+                </li>
+                <li class="fragment">
+                  Computationally expensive, struggles with complex systems.
+                </li>
+              </ul>
+              <div class="fragment">
+                <img
+                  src="images/tree.svg"
+                  alt="Tree Diagram"
+                  style="max-width: 100%; height: 300px"
+                />
+                $y = \log(x)^{\theta_0} + \exp(\theta_1 x)$
+              </div>
+            </div>
+            <aside class="notes">
+              Some methods can incorporate physical constraints (e.g.,
+              symmetries, conservation laws). Expressions are stored in tree
+              form. These trees are varied (genetic algorithms) to best fit the
+              data.
+            </aside>
+          </section>
+        </section>
+
+        <!-- Dynamical Systems -->
+        <section>
+          <section>
+            <h2>Focus: Dynamical Systems \( \mathbf{X}(t) \)</h2>
+            <ul>
+              <li class="fragment">
+                Given time-series data \( \{ \mathbf{X}_t \} \).
+              </li>
+              <li class="fragment">
+                Goal: Predict future states \( \mathbf{X}_{t+dt} \).
+              </li>
+              <li class="fragment">
+                Learn the evolution function \( \mathbf{\Phi}^{dt} \) such that
+                \( \mathbf{\Phi}^{dt}(\mathbf{X}_t) = \mathbf{X}_{t+dt} \).
+              </li>
+            </ul>
+            <p class="fragment">Why this problem?</p>
+            <ul style="text-align: left">
+              <li class="fragment">Ubiquitous in science & engineering.</li>
+              <li class="fragment">
+                High-dimensional and complex: Hard for symbolic regression
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h2>SINDy: Sparse Identification of Nonlinear Dynamics</h2>
+
+            <p style="text-align: left">
+              <strong>Goal:</strong> ODE $\dot{\mathbf{X}} =
+              \mathbf{f}(\mathbf{X})$ from $\{\mathbf{X}(t),
+              \dot{\mathbf{X}}(t)\}$.
+            </p>
+
+            <p style="text-align: left">
+              Assume $\mathbf{f}(\mathbf{X})$ consists of a few terms from a
+              library $\Theta(\mathbf{X})$ of candidate functions (e.g.,
+              polynomials $[1, \mathbf{X}, \mathbf{X}^2, \dots]$).
+            </p>
+            <p style="text-align: left">
+              Solve $\dot{\mathbf{X}} \approx \Theta(\mathbf{X}) \Xi$ with
+              sparse regression to find coeffs $\Xi$.
+            </p>
+            <aside class="notes">
+              Essentially, this is specialized symbolic regression for ODES. It
+              makes a strong assumption, but works for many systems considered
+              in physics.<br />
+              <br />
+              Here, we want to make as few assumptions as possible.
+            </aside>
+          </section>
+          <section>
+            <h2>Complexity reduction</h2>
+            <ul>
+              <li class="fragment" data-fragment-index="1">
+                Data: Sensor Fields (Pressure, Temperature), Videos
+              </li>
+              <li class="fragment" data-fragment-index="2">
+                Data is very high-dimensional: Much data is redundant or
+                irrelevant for dynamics.
+              </li>
+              <li class="fragment" data-fragment-index="3">
+                <strong>Key Idea:</strong> Can we automatically find the
+                <em>essential state variables</em>?
+              </li>
+            </ul>
+          </section>
+        </section>
+
+        <!-- Examples for Degrees of Freedom -->
+        <section>
+          <section>
+            <h2>Examples: Degrees of Freedom</h2>
+            <p>How many variables are needed to describe the state?</p>
+            <div
+              class="fragment"
+              style="
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+              "
+            >
+              <video
+                data-autoplay
+                loop
+                muted
+                playsinline
+                style="max-width: 100%"
+              >
+                <source src="images/pendulums.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <aside class="notes">
+              We need position and velocity to predict the future state from a
+              single frame. \( \ddot{\theta} \) is determined by the physics.
+            </aside>
+          </section>
+
+          <section>
+            <h2>What about more complex systems?</h2>
+            <video
+              data-autoplay
+              muted
+              playsinline
+              style="max-width: 80%"
+              width="400"
+            >
+              <source src="images/air-dancer.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <p class="fragment">How many variables control this motion?</p>
+            <p style="font-size: 18px; text-align: right; color: gray">
+              [4] (air_dancer)
+            </p>
+            <aside class="notes">
+              Of course, this is infinite-dimensional. But it is somewhat
+              regular and periodic, so we can find an approximately accurate
+              finite-dimensional representation. (It turns out that the ID is
+              between 5 and 10).<br />
+              Let's make this more formal
+            </aside>
+          </section>
+        </section>
+        <!-- ID -->
+        <section>
+          <section>
+            <h2>Intrinsic Dimensionality (ID)</h2>
+            <ul>
+              <li class="fragment">
+                System state \( \mathbf{X} \) lives in an ambient space \(
+                \mathcal{X} \) (e.g., pixel space).
+              </li>
+              <div
+                class="fragment"
+                style="
+                  display: flex;
+
+                  align-items: center;
+                "
+              >
+                <img
+                  src="images/air-dancer-frame.jpg"
+                  alt="Air Dancer Frame"
+                  style="max-width: 100%"
+                  width="150"
+                />
+                $\quad\equiv \mathbf{X} \in \mathbb{R}^{100\times 100}\quad$
+                (image pixels)
+              </div>
+              <li class="fragment">
+                The possible states occupy a smaller <em>state space</em> \(
+                \mathcal{S} \subseteq \mathcal{X} \).
+              </li>
+              <li class="fragment">
+                <strong>Intrinsic Dimensionality:</strong> The minimum number of
+                independent variables needed to describe any state in \(
+                \mathcal{S} \).
+              </li>
+              <li class="fragment">
+                Geometrically: \( \mathrm{dim}(\mathcal{S}) \).
+              </li>
+            </ul>
+          </section>
+
+          <section data-auto-animate>
+            <h2>ID Examples: Simple Manifolds</h2>
+            <p>
+              Data points might look high-dimensional but follow simple
+              structures:
+            </p>
+            <div
+              class="fragment fade-in-then-out"
+              style="display: flex; justify-content: space-between; gap: 10px"
+            >
+              <p>
+                <img
+                  src="images/linear-data.png"
+                  alt="Linear data"
+                  style="width: 100%"
+                />
+              </p>
+              <p>
+                <img
+                  src="images/circular-data.png"
+                  alt="Circular data"
+                  style="height: 80%"
+                />
+              </p>
+            </div>
+          </section>
+        </section>
+        <!-- Manifold Hypothesis -->
+        <section>
+          <h2>The Manifold Hypothesis</h2>
+          <div
+            class="fragment"
+            style="border: 3px solid #ccc; padding: 15px; border-radius: 5px"
+          >
+            <p>
+              Natural high-dimensional data lie on <br />
+              or near a low-dimensional manifold \( \mathcal{S} \).
+            </p>
+          </div>
+          <p class="fragment" style="text-align: left">Examples:</p>
+          <ul>
+            <li class="fragment">
+              Valid English sentences $\subset$ random letter sequences.
+            </li>
+            <li class="fragment">States of physical systems</li>
+          </ul>
+          <p class="fragment" style="text-align: left">
+            If we can identify \( \mathcal{S} \), predicting dynamics becomes
+            much simpler $\Rightarrow$ Manifold Learning
+          </p>
+          <aside class="notes">
+            This underlies much of machine learning. In reality, a *union of
+            manifolds* is needed for complicated datasets.<br />
+            For physical systems, we can often derive this formally.
+            <br /><br />
+            These manifolds are complicated and nonlinear.
+          </aside>
+        </section>
+
+        <!-- Manifold Learning -->
+        <section>
+          <h2>Manifold Learning: Finding \( \mathcal{S} \)</h2>
+          <ul>
+            <p>Goal: Find a low-dimensional representation</p>
+          </ul>
+          <div class="r-stack" style="margin-top: 0%">
+            <video
+              data-autoplay
+              muted
+              playsinline
+              style="max-width: 100%"
+              width="700"
+              class="fragment"
+            >
+              <source src="images/unroll-1.mp4" type="video/mp4" />
+            </video>
+            <video
+              data-autoplay
+              muted
+              playsinline
+              style="max-width: 100%"
+              width="700"
+              class="fragment"
+            >
+              <source src="images/unroll-2.mp4" type="video/mp4" />
+            </video>
+          </div>
+          <aside class="notes">
+            There are many techniques, such as linear ones like PCA.
+          </aside>
+        </section>
+
+        <!-- Autoencoders -->
+        <section>
+          <section>
+            <h2>Autoencoders for Dynamics</h2>
+            <p>
+              \( \begin{align*} \mathbf{X} & \in \mathcal{X} \subseteq
+              \mathbb{R}^m \\ \mathbf{\mathrm{z}} & \in \mathbb{R}^n \text{
+              (latent space)} \\ \end{align*} \)
+            </p>
+            <div class="fragment" style="flex: 1; text-align: center">
+              <img
+                src="images/autoencoder-diagram.png"
+                alt="Autoencoder Diagram"
+                style="width: 600px"
+              />
+            </div>
+            <p class="fragment">
+              Objective: Minimize \( ||g_D(g_E(\mathbf{X}_t)) -
+              \mathbf{X}_{t+dt}|| \)
+            </p>
+          </section>
+          <section>
+            <h2>ID Estimation via Autoencoders</h2>
+            <span style="position: relative; display: inline-block">
+              <img
+                src="images/latent-dim-estimate.png"
+                alt="Latent Dimension Estimate"
+                style="width: 600px"
+              />
+              <span
+                style="
+                  position: absolute;
+                  bottom: 5px;
+                  right: 10px;
+                  font-size: 25px;
+                  color: gray;
+                "
+              >
+                [3], Fig. 3a
+              </span>
+            </span>
+
+            <aside class="notes">
+              Here, the system is a 1D PDE. We would hope that the latent
+              dimension where the error drops is the ID. This is not always the
+              case. Why?
+            </aside>
+          </section>
+          <section>
+            <h2>Why the Naive Approach Fails</h2>
+            <div style="display: flex; align-items: flex-start; gap: 20px">
+              <div style="flex: 1">
+                <ul>
+                  <li class="fragment" data-fragment-index="0">
+                    Complexity of \( \mathcal{S} \)
+                  </li>
+                  <li class="fragment" data-fragment-index="1">
+                    Non-uniform Sampling
+                  </li>
+                  <li class="fragment" data-fragment-index="1">
+                    Result: Poor predictions for less frequent states.
+                  </li>
+                </ul>
+              </div>
+              <div style="flex: 1; text-align: center; position: relative">
+                <img
+                  src="images/complicated-phase-space.png"
+                  alt="Complicated State Space"
+                  style="max-width: 100%; border-radius: 5px"
+                />
+                <div
+                  style="
+                    position: absolute;
+                    bottom: 5px;
+                    right: 10px;
+                    font-size: 25px;
+                    color: gray;
+                  "
+                >
+                  [2], Fig. 5a
+                </div>
+              </div>
+            </div>
+            <aside class="notes">
+              State space in 3D. Locally 1D, globally 2D. Some parts (red, blue)
+              have a lot of samples: typical states. Other parts (green) are
+              rare: e.g., phase transitions between typical states. AE will
+              probably poorly learn these parts of the manifold.
+            </aside>
+          </section>
+        </section>
+
+        <section>
+          <h2>Approach 1: Neural State Variables</h2>
+          <small>(Chen et al., Nat Comput Sci 2022)</small>
+          <ol>
+            <li class="fragment">
+              Train naive autoencoder \( g = g_D \circ g_E \) with $\textrm{LD}
+              > \textrm{ID}$.
+            </li>
+            <li class="fragment">
+              Train autoencoder \( h \) with $\textrm{LD} = \textrm{ID}$ on
+              latent vectors \( \mathbf{z}_t \). Neural state variables: Latent
+              space of \( h \)
+            </li>
+          </ol>
+          <p class="fragment">
+            Idea: Find the intrinsic structure <em>within</em> the first latent
+            space.
+          </p>
+        </section>
+
+        <section>
+          <h2>Approach 2: Learning an Atlas</h2>
+          <small>(Floryan & Graham, Nat Mach Intell 2022)</small>
+          <div style="display: flex; align-items: flex-start; gap: 20px">
+            <div style="flex: 1">
+              <ul>
+                <li>
+                  Decompose \( \mathcal{S} \) into <em>charts</em> \(
+                  \mathcal{S}_i \)
+                </li>
+                <li class="fragment" data-fragment-index="1">
+                  Approximate each chart with a low-dimensional map.
+                </li>
+                <li class="fragment" data-fragment-index="2">
+                  The chart collection \( \{ \mathcal{S}_i \} \) forms an
+                  <em>atlas</em>.
+                </li>
+                <li class="fragment" data-fragment-index="3">
+                  Learn dynamics locally on each chart.
+                </li>
+              </ul>
+            </div>
+            <div
+              class="r-stack"
+              style="flex: 1; align-self: center; position: relative"
+            >
+              <img
+                src="images/atlas-1.png"
+                alt="Atlas Decomposition: Pre"
+                style="width: 600px"
+                class="fragment fade-out"
+                data-fragment-index="0"
+              />
+              <img
+                src="images/atlas-2.png"
+                alt="Atlas"
+                style="width: 600px"
+                class="fragment current-visible"
+                data-fragment-index="0"
+              />
+              <img
+                src="images/atlas-3.png"
+                alt="Atlas Unrolled"
+                style="width: 600px"
+                class="fragment"
+                data-fragment-index="1"
+              />
+              <div
+                style="
+                  position: absolute;
+                  bottom: 5px;
+                  right: 10px;
+                  font-size: 20px;
+                  color: gray;
+                "
+              >
+                Based on [2], Fig. 2
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <section data-auto-animate>
+            <h2>Case Study: Reaction-Diffusion</h2>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                flex-direction: column;
+                justify-content: flex-start;
+              "
+            >
+              <div
+                style="
+                  border: 3px solid #ccc;
+                  padding: 15px;
+                  border-radius: 5px;
+                  max-width: fit-content;
+                  text-align: center;
+                "
+              >
+                \( \begin{align*} u_t &= f(u, v) + d_1(u_{xx} + u_{yy}) \\ v_t
+                &= g(u, v) + d_2(v_{xx} + v_{yy}) \end{align*} \)
+              </div>
+              <br />
+              <div
+                class="fragment"
+                style="text-align: center; position: relative"
+              >
+                <video data-autoplay muted playsinline height="300">
+                  <source
+                    src="images/reaction-diffusion.mp4"
+                    type="video/mp4"
+                  />
+                  Video not supported.
+                </video>
+                <div
+                  style="
+                    position: absolute;
+                    bottom: 5px;
+                    right: 10px;
+                    font-size: 12px;
+                    color: gray;
+                  "
+                >
+                  [4] (reaction_diffusion)
+                </div>
+              </div>
+            </div>
+          </section>
+          <section data-auto-animate>
+            <h2>Case Study: Reaction-Diffusion</h2>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                flex-direction: column;
+                justify-content: flex-start;
+              "
+            >
+              <div
+                style="
+                  border: 3px solid #ccc;
+                  padding: 15px;
+                  border-radius: 5px;
+                  max-width: fit-content;
+                  text-align: center;
+                "
+              >
+                \( \begin{align*} u_t &= f(u, v) + d_1(u_{xx} + u_{yy}) \\ v_t
+                &= g(u, v) + d_2(v_{xx} + v_{yy}) \end{align*} \)
+              </div>
+              <br />
+              <div class="r-stack" style="position: relative; width: 100%">
+                <div
+                  class="fragment fade-out"
+                  data-fragment-index="0"
+                  style="text-align: center"
+                >
+                  <p style="margin-top: 0px; margin-bottom: 0px">
+                    <em>Limit Cycle</em> (attractor): periodic stable solution
+                  </p>
+                  <div style="position: relative; display: inline-block">
+                    <img
+                      src="images/limit-cycle.png"
+                      alt="Limit Cycle"
+                      style="height: 350px; max-width: 80%; margin-top: 10px"
+                    />
+                    <div
+                      style="
+                        position: absolute;
+                        bottom: 60px;
+                        right: -400px;
+                        font-size: 12px;
+                        color: gray;
+                      "
+                    >
+                      <a style="color: gray"
+                        href="https://commons.wikimedia.org/wiki/File:VanDerPolPhaseSpace.png"
+                        >https://commons.wikimedia.org/wiki/File:VanDerPolPhaseSpace.png</a
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="fragment"
+                  data-fragment-index="0"
+                  style="text-align: center; position: relative"
+                >
+                  <video
+                    data-autoplay
+                    loop
+                    muted
+                    playsinline
+                    height="400"
+                    style="max-width: 80%"
+                  >
+                    <source
+                      src="images/reaction-diffusion-comparison.mp4"
+                      type="video/mp4"
+                    />
+                    Video not supported.
+                  </video>
+                  <div
+                    style="
+                      position: absolute;
+                      bottom: 30px;
+                      right: 10px;
+                      font-size: 20px;
+                      color: gray;
+                    "
+                  >
+                    [2], Supplementary Video 1
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h2>Limitations & Interpretability</h2>
+          <ul>
+            <li>Non-Uniqueness</li>
+            <li class="fragment" data-fragment-index="0">
+              Lack of Units/Physical Meaning:
+              <ul>
+                <li class="fragment" data-fragment-index="0">
+                  The learned variables are abstract mathematical coordinates.
+                </li>
+                <li class="fragment" data-fragment-index="1">
+                  We can find the number of variables: $\textrm{ID}=4$ for the
+                  double pendulum.
+                </li>
+                <li class="fragment" data-fragment-index="1">
+                  Learned state variables are not \( (\theta_1, \dot{\theta}_1,
+                  \theta_2, \dot{\theta}_2) \).
+                </li>
+              </ul>
+            </li>
+            <li class="fragment" data-fragment-index="2">
+              Mapping to known physics requires further analysis.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Why is this useful?</h2>
+          <ul>
+            <li class="fragment">
+              Knowing the ID might reveal hidden constraints or conserved
+              quantities.
+            </li>
+            <li class="fragment">
+              Efficient Prediction: Simulate dynamics in the low-dimensional
+              latent space (much faster than full high-dim simulation).
+            </li>
+            <li class="fragment">
+              Guide other methods: Use the known ID to constrain the search
+              space for finding interpretable equations.
+            </li>
+            <li class="fragment">
+              Data Fusion: Combine information from different sources by mapping
+              them to a common latent space.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Recap</h2>
+          <ul>
+            <li class="fragment">
+              To model complex dynamical systems, find the
+              <b>intrinsic dimensionality</b>.
+            </li>
+            <li class="fragment">
+              Based on rigorous results or <b>Manifold Hypothesis</b>.
+            </li>
+            <li class="fragment">
+              Two techniques to find the manifold and learn the dynamics when
+              the naive approach fails.
+            </li>
+            <li class="fragment">
+              Interpretation remains difficult, but we can simulate the system
+              efficiently.
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>References</h2>
+          <p style="text-align: left; font-size: 0.6em">
+            [1] Chen, B. et al. (2022). Automated discovery of fundamental
+            variables hidden in experimental data.
+            <em>Nature Computational Science, 2</em>(7), 433–442.
+            <a href="https://doi.org/10.1038/s43588-022-00281-6"
+              >https://doi.org/10.1038/s43588-022-00281-6</a
+            >
+            <br /><br />
+            [2] Floryan, D., & Graham, M. D. (2022). Data-driven discovery of
+            intrinsic dynamics. <em>Nature Machine Intelligence, 4</em>(12),
+            1113–1120.
+            <a href="https://doi.org/10.1038/s42256-022-00575-4"
+              >https://doi.org/10.1038/s42256-022-00575-4</a
+            >
+            <br /><br />
+            [3] Vlachas, P. R. et al. (2022). Multiscale simulations of complex
+            systems by learning their effective dynamics.
+            <em>Nature Machine Intelligence, 4</em>(4), 359–366.
+            <a href="https://doi.org/10.1038/s42256-022-00464-w"
+              >https://doi.org/10.1038/s42256-022-00464-w</a
+            >
+            <br /><br />
+            [4] Image data from
+            <a href="https://zenodo.org/records/6653856"
+              >https://zenodo.org/records/6653856</a
+            >
+          </p>
+
+          <p style="margin-top: 50px">Questions?</p>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/math/math.min.js"></script>
+
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true, // Add slide numbers to the URL
+        controls: false, // Display controls in the bottom right corner
+        progress: true, // Display a presentation progress bar
+        slideNumber: "c/t", // Display the page number of the current slide <c> and the total slide number <t>
+        history: true, // Push each slide change to the browser history
+        keyboard: true, // Enable keyboard shortcuts for navigation
+        overview: true, // Enable slide overview (press 'Esc')
+        center: true, // Vertical centering of slides
+        touch: true, // Enables touch navigation on devices with touch input
+        loop: false, // Loop the presentation
+        rtl: false, // Right-to-left layout
+        shuffle: false, // Randomizes the order of slides each time the presentation loads
+        fragments: true, // Turns fragments on and off globally
+        embedded: false, // Flags if the presentation is running in an embedded mode, like notes server
+        help: true, // Flags if we should show a help overlay when '?' is pressed
+
+        // Presentation size
+        width: 1100, // Adjusted width for potentially wider content like code or side-by-side visuals
+        height: 700,
+        margin: 0.04, // Factor of screen size
+        minScale: 0.2, // Minimum scaling factor
+        maxScale: 2.0, // Maximum scaling factor
+
+        // Plugins
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealNotes,
+          RevealMath.MathJax3,
+        ],
+
+        // MathJax Configuration
+        mathjax3: {
+          mathjax:
+            "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js", // Path to MathJax
+          options: {
+            startup: {
+              typeset: false, // Delay typesetting until Reveal triggers it
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
